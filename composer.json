@@ -1,0 +1,41 @@
+{
+  "name": "blue-nest-cloud/bnc-upload",
+  "description": "Upload package for thinkphp",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "任我行",
+      "email": "313970140@qq.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "bnc\\upload\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.1.0",
+    "topthink/framework": "^6.0.0",
+    "qiniu/php-sdk": "^7.3",
+    "qcloud/cos-sdk-v5": "^2.2",
+    "ext-curl": "*",
+    "qcloud_sts/qcloud-sts-sdk": "^3.0",
+    "aliyuncs/oss-sdk-php": "^2.4",
+    "guzzle/guzzle": "^3.9",
+    "ext-json": "*"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "bnc\\upload\\": "src/",
+      "bnc\\tests\\": "index/"
+    }
+  },
+  "extra": {
+    "bnc": {
+      "config": {
+        "bnc_upload": "src/bnc_upload.php"
+      }
+    }
+  }
+}
