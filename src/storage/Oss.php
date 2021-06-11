@@ -125,7 +125,8 @@ class Oss extends BaseUpload
             if (!$key) {
                 $key = $this->saveFileName();
             }
-            $fileContent = (string)EntityBody::factory($fileContent);
+//            $fileContent =
+//                (string)EntityBody::factory($fileContent);
             $uploadInfo  = $this->app()->putObject($this->storageName, $key, $fileContent);
             if (!isset($uploadInfo['info']['url'])) {
                 return $this->setError('Upload failure');

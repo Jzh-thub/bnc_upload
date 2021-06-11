@@ -99,7 +99,7 @@ class Cos extends BaseUpload
      * @param string|null $fileContent 流内容
      * @return array|false
      */
-    protected function upload(string $file = null, bool $isStream = false, string $fileContent = null): bool|array
+    protected function upload(string $file = null, bool $isStream = false, string $fileContent = null)
     {
         if (!$isStream) {
             /** @var \UploadValidate $uploadValidate */
