@@ -102,10 +102,10 @@ class Oss extends BaseUpload
             if (!isset($uploadInfo['info']['url'])) {
                 return $this->setError('Upload failure');
             }
-            $this->fileInfo->uploadInfo = $uploadInfo;
-            $this->fileInfo->realName   = $fileHandle->getOriginalName();
-            $this->fileInfo->filePath   = $this->uploadUrl . '/' . $key;
-            $this->fileInfo->fileName   = $key;
+            $this->fileInfo->uploadInfo   = $uploadInfo;
+            $this->fileInfo->originalName = $fileHandle->getOriginalName();
+            $this->fileInfo->filePath     = $this->uploadUrl . '/' . $key;
+            $this->fileInfo->fileName     = $key;
             return $this->fileInfo;
         } catch (\RuntimeException $e) {
             return $this->setError($e->getMessage());
@@ -127,14 +127,14 @@ class Oss extends BaseUpload
             }
 //            $fileContent =
 //                (string)EntityBody::factory($fileContent);
-            $uploadInfo  = $this->app()->putObject($this->storageName, $key, $fileContent);
+            $uploadInfo = $this->app()->putObject($this->storageName, $key, $fileContent);
             if (!isset($uploadInfo['info']['url'])) {
                 return $this->setError('Upload failure');
             }
-            $this->fileInfo->uploadInfo = $uploadInfo;
-            $this->fileInfo->realName   = $key;
-            $this->fileInfo->filePath   = $this->uploadUrl . '/' . $key;
-            $this->fileInfo->fileName   = $key;
+            $this->fileInfo->uploadInfo   = $uploadInfo;
+            $this->fileInfo->originalName = $key;
+            $this->fileInfo->filePath     = $this->uploadUrl . '/' . $key;
+            $this->fileInfo->fileName     = $key;
             return $this->fileInfo;
         } catch (\RuntimeException $e) {
             return $this->setError($e->getMessage());
