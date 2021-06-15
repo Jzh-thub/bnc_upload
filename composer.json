@@ -33,7 +33,7 @@
   "extra": {
     "think": {
       "config": {
-        "bnc_upload": "src/bnc_upload.php"
+        "bncUpload": "src/config/bncUpload.php"
       }
     }
   }

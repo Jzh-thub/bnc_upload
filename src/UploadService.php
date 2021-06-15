@@ -46,6 +46,6 @@ class UploadService
                 ];
                 break;
         }
-        return self::$upload['upload_' . $type] = new \Upload($type, $config);
+        return self::$upload['upload_' . $type] = new BncUpload($type, $config);
     }
 }

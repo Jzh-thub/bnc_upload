@@ -3,6 +3,7 @@
 namespace bnc\upload\storage;
 
 use bnc\upload\base\BaseUpload;
+use bnc\upload\UploadValidate;
 use Qcloud\Cos\Client;
 use QCloud\COSSTS\Sts;
 use think\Exception;
@@ -102,8 +103,8 @@ class Cos extends BaseUpload
     protected function upload(string $file = null, bool $isStream = false, string $fileContent = null)
     {
         if (!$isStream) {
-            /** @var \UploadValidate $uploadValidate */
-            $uploadValidate = app()->make(\UploadValidate::class);
+            /** @var UploadValidate $uploadValidate */
+            $uploadValidate = app()->make(UploadValidate::class);
             $fileHandle     = $uploadValidate->validate($file, $this->validate);
             if (!$fileHandle)
                 return false;

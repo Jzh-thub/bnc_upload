@@ -1,5 +1,6 @@
 <?php
 
+namespace bnc\upload;
 
 use think\facade\Config;
 
@@ -10,7 +11,7 @@ use think\facade\Config;
  * @mixin \bnc\upload\storage\Cos
  * @mixin \bnc\upload\storage\Qiniu
  */
-class Upload extends \bnc\upload\base\BaseManager
+class BncUpload extends \bnc\upload\base\BaseManager
 {
     protected $namespace = '\\bnc\\upload\\storage\\';
 
@@ -20,6 +21,6 @@ class Upload extends \bnc\upload\base\BaseManager
      */
     protected function getDefaultDriver()
     {
-        return Config::get('upload.default', 'local');
+        return Config::get('bncUpload.default', 'local');
     }
 }

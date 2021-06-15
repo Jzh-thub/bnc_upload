@@ -5,6 +5,7 @@ namespace bnc\upload\storage;
 
 
 use bnc\upload\base\BaseUpload;
+use bnc\upload\UploadValidate;
 use Qiniu\Auth;
 use Qiniu\Config;
 use Qiniu\Storage\BucketManager;
@@ -100,8 +101,8 @@ class Qiniu extends BaseUpload
      */
     public function move(string $file = 'file')
     {
-        /** @var \UploadValidate $uploadValidate */
-        $uploadValidate = app()->make(\UploadValidate::class);
+        /** @var UploadValidate $uploadValidate */
+        $uploadValidate = app()->make(UploadValidate::class);
         $fileHandle     = $uploadValidate->validate($file, $this->validate);
         if (!$fileHandle)
             return false;

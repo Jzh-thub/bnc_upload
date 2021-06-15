@@ -3,7 +3,7 @@
 namespace bnc\upload\storage;
 
 use bnc\upload\base\BaseUpload;
-use Guzzle\Http\EntityBody;
+use bnc\upload\UploadValidate;
 use OSS\Core\OssException;
 use OSS\OssClient;
 
@@ -90,8 +90,8 @@ class Oss extends BaseUpload
      */
     public function move(string $file = 'file')
     {
-        /** @var \UploadValidate $uploadValidate */
-        $uploadValidate = app()->make(\UploadValidate::class);
+        /** @var UploadValidate $uploadValidate */
+        $uploadValidate = app()->make(UploadValidate::class);
         $fileHandle     = $uploadValidate->validate($file, $this->validate);
         if (!$fileHandle)
             return false;

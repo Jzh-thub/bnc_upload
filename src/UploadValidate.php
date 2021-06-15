@@ -1,5 +1,5 @@
 <?php
-
+namespace bnc\upload;
 
 use think\exception\ValidateException;
 use think\file\UploadedFile;
