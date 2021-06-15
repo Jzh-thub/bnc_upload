@@ -13,7 +13,8 @@ return [
     'stores'   => [
         //本地
         'local' => [
-            'save_dir' => public_path(),
+            'save_dir' => public_path(),//保存路径
+            'url'      => '',           //对外路径
             'disks'    => [
                 //上传保存路径
                 'tmp_dir'     => root_path('runtime' . DIRECTORY_SEPARATOR . 'tmp'),//临时路径

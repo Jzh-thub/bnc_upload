@@ -163,7 +163,6 @@ abstract class BaseUpload extends BaseStorage
                 'type'          => $headers['type'] ?? 'image/jpeg',
                 'dir'           => $this->fileInfo->filePath,
                 'time'          => time(),
-                'ext'           => $this->fileInfo->fileExt,
                 //TODO 是否需要上传类型
             ];
         } else {
