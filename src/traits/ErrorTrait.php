@@ -21,7 +21,7 @@ trait ErrorTrait
      * @param string|null $error
      * @return false
      */
-    protected function setError(?string $error = null)
+    protected function setError(?string $error = null): bool
     {
         $this->error = $error ?: "未知错误";
         return false;
@@ -31,7 +31,7 @@ trait ErrorTrait
      * 获取错误信息
      * @return string
      */
-    public function getError()
+    public function getError(): string
     {
         $error       = $this->error;
         $this->error = null;

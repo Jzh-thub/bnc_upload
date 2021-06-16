@@ -55,13 +55,13 @@ class Oss extends BaseUpload
      * @param array $config
      * @return mixed|void
      */
-    protected function initialize(array $config)
+    protected function initialize (array $config)
     {
         parent::initialize($config);
-        $this->accessKey     = $config['accessKey'] ?? null;
-        $this->secretKey     = $config['secretKey'] ?? null;
-        $this->uploadUrl     = $this->checkUploadUrl($config['uploadUrl'] ?? '');
-        $this->storageName   = $config['storageName'] ?? null;
+        $this->accessKey = $config['accessKey'] ?? null;
+        $this->secretKey = $config['secretKey'] ?? null;
+        $this->uploadUrl = $this->checkUploadUrl($config['uploadUrl'] ?? '');
+        $this->storageName = $config['storageName'] ?? null;
         $this->storageRegion = $config['storageRegion'] ?? null;
     }
 
@@ -70,7 +70,7 @@ class Oss extends BaseUpload
      * @return OssClient
      * @throws OssException
      */
-    protected function app(): OssClient
+    protected function app (): OssClient
     {
         if (!$this->accessKey || !$this->secretKey) {
             throw new \RuntimeException('Please configure accessKey and secretKey');
@@ -88,24 +88,24 @@ class Oss extends BaseUpload
      * @return array|false
      * @throws OssException
      */
-    public function move(string $file = 'file')
+    public function move (string $file = 'file')
     {
         /** @var UploadValidate $uploadValidate */
         $uploadValidate = app()->make(UploadValidate::class);
-        $fileHandle     = $uploadValidate->validate($file, $this->validate);
-        if (!$fileHandle)
-            return false;
-
+        [$fileHandle, $error] = $uploadValidate->validate($file, $this->validate);
+        if ($error)
+            return $this->setError($error);
         $key = $this->saveFileName($fileHandle->getRealPath(), $fileHandle->getOriginalExtension());
         try {
             $uploadInfo = $this->app()->uploadFile($this->storageName, $key, $fileHandle->getRealPath());
             if (!isset($uploadInfo['info']['url'])) {
                 return $this->setError('Upload failure');
             }
-            $this->fileInfo->uploadInfo   = $uploadInfo;
+//            $this->fileInfo->uploadInfo = $uploadInfo;
             $this->fileInfo->originalName = $fileHandle->getOriginalName();
-            $this->fileInfo->filePath     = $this->uploadUrl . '/' . $key;
-            $this->fileInfo->fileName     = $key;
+            $this->fileInfo->filePath = $this->uploadUrl . '/' . $key;
+            $this->fileInfo->fileName = $key;
+            $this->fileInfo->size = $fileHandle->getSize();
             return $this->fileInfo;
         } catch (\RuntimeException $e) {
             return $this->setError($e->getMessage());
@@ -114,12 +114,12 @@ class Oss extends BaseUpload
 
     /**
      * 文件流上传
-     * @param string      $fileContent
+     * @param string $fileContent
      * @param string|null $key
      * @return array|false
      * @throws OssException
      */
-    public function stream(string $fileContent, string $key = null)
+    public function stream (string $fileContent, string $key = null)
     {
         try {
             if (!$key) {
@@ -131,10 +131,10 @@ class Oss extends BaseUpload
             if (!isset($uploadInfo['info']['url'])) {
                 return $this->setError('Upload failure');
             }
-            $this->fileInfo->uploadInfo   = $uploadInfo;
+//            $this->fileInfo->uploadInfo = $uploadInfo;
             $this->fileInfo->originalName = $key;
-            $this->fileInfo->filePath     = $this->uploadUrl . '/' . $key;
-            $this->fileInfo->fileName     = $key;
+            $this->fileInfo->filePath = $this->uploadUrl . '/' . $key;
+            $this->fileInfo->fileName = $key;
             return $this->fileInfo;
         } catch (\RuntimeException $e) {
             return $this->setError($e->getMessage());
@@ -146,7 +146,7 @@ class Oss extends BaseUpload
      * @param string $filePath
      * @return false|null
      */
-    public function delete(string $filePath): ?bool
+    public function delete (string $filePath): ?bool
     {
         try {
             return $this->app()->deleteObject($this->storageName, $filePath);
@@ -162,24 +162,24 @@ class Oss extends BaseUpload
      * @return array
      * @throws \Exception
      */
-    public function getTempKeys(string $callbackUrl = '', string $dir = ''): array
+    public function getTempKeys (string $callbackUrl = '', string $dir = ''): array
     {
         $base64CallbackBody = base64_encode(json_encode([
-            'callbackUrl'      => $callbackUrl,
-            'callbackBody'     => 'filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}',
-            'callbackBodyType' => "application/x-www-form-urlencoded"
-        ]));
+                                                            'callbackUrl'      => $callbackUrl,
+                                                            'callbackBody'     => 'filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}',
+                                                            'callbackBodyType' => "application/x-www-form-urlencoded"
+                                                        ]));
 
-        $policy       = json_encode([
-            'expiration' => $this->gmtIso8601(time() + 30),
-            'conditions' =>
-                [
-                    [0 => 'content-length-range', 1 => 0, 2 => 1048576000],
-                    [0 => 'starts-with', 1 => '$key', 2 => $dir]
-                ]
-        ]);
+        $policy = json_encode([
+                                  'expiration' => $this->gmtIso8601(time() + 30),
+                                  'conditions' =>
+                                      [
+                                          [0 => 'content-length-range', 1 => 0, 2 => 1048576000],
+                                          [0 => 'starts-with', 1 => '$key', 2 => $dir]
+                                      ]
+                              ]);
         $base64Policy = base64_encode($policy);
-        $signature    = base64_encode(hash_hmac('sha1', $base64Policy, $this->secretKey, true));
+        $signature = base64_encode(hash_hmac('sha1', $base64Policy, $this->secretKey, true));
         return [
             'accessid'  => $this->accessKey,
             'host'      => $this->uploadUrl,
@@ -197,12 +197,12 @@ class Oss extends BaseUpload
      * @return string
      * @throws \Exception
      */
-    protected function gmtIso8601($time): string
+    protected function gmtIso8601 ($time): string
     {
-        $dtStr      = date("c", $time);
+        $dtStr = date("c", $time);
         $mydatetime = new \DateTime($dtStr);
         $expiration = $mydatetime->format(\DateTime::ISO8601);
-        $pos        = strpos($expiration, '+');
+        $pos = strpos($expiration, '+');
         $expiration = substr($expiration, 0, $pos);
         return $expiration . "Z";
     }

@@ -105,9 +105,9 @@ class Cos extends BaseUpload
         if (!$isStream) {
             /** @var UploadValidate $uploadValidate */
             $uploadValidate = app()->make(UploadValidate::class);
-            $fileHandle     = $uploadValidate->validate($file, $this->validate);
-            if (!$fileHandle)
-                return false;
+            [$fileHandle, $error] = $uploadValidate->validate($file, $this->validate);
+            if ($error)
+                return $this->setError($error);
             $key  = $this->saveFileName($fileHandle->getRealPath(), $fileHandle->getOriginalExtension());
             $body = fopen($fileHandle->getRealPath(), 'rb');
         } else {

@@ -1,4 +1,5 @@
 <?php
+
 namespace bnc\upload;
 
 use think\exception\ValidateException;
@@ -6,19 +7,17 @@ use think\file\UploadedFile;
 
 class UploadValidate
 {
-    use \bnc\upload\traits\ErrorTrait;
 
     /**
-     * 验证
      * @param $file
      * @param $validate
-     * @return array|false|UploadedFile
+     * @return  array
      */
-    public function validate($file, $validate)
+    public function validate ($file, $validate):array
     {
         $fileHandle = app()->request->file($file);
         if (!$fileHandle)
-            return $this->setError('Upload file does not exist');
+            return [$fileHandle, 'Upload file does not exist'];
         if ($validate) {
             try {
                 $error = [
@@ -28,10 +27,11 @@ class UploadValidate
                 ];
                 validate([$file => $validate], $error)->check([$file => $fileHandle]);
             } catch (ValidateException $e) {
-                return $this->setError($e->getMessage());
+                return [$fileHandle, $e->getMessage()];
             }
         }
-        return $fileHandle;
+        return [$fileHandle, ''];
     }
 
 }
+

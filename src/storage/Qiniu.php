@@ -67,13 +67,13 @@ class Qiniu extends BaseUpload
      * @param array $config
      * @return mixed|void
      */
-    public function initialize(array $config)
+    public function initialize (array $config)
     {
         parent::initialize($config);
-        $this->accessKey     = $config['accessKey'] ?? null;
-        $this->secretKey     = $config['secretKey'] ?? null;
-        $this->uploadUrl     = $this->checkUploadUrl($config['uploadUrl'] ?? '');
-        $this->storageName   = $config['storageName'] ?? null;
+        $this->accessKey = $config['accessKey'] ?? null;
+        $this->secretKey = $config['secretKey'] ?? null;
+        $this->uploadUrl = $this->checkUploadUrl($config['uploadUrl'] ?? '');
+        $this->storageName = $config['storageName'] ?? null;
         $this->storageRegion = $config['storageRegion'] ?? null;
     }
 
@@ -83,7 +83,7 @@ class Qiniu extends BaseUpload
      *
      * @return object|Auth
      */
-    protected function app()
+    protected function app ()
     {
         if (!$this->accessKey || !$this->secretKey) {
             throw new \RuntimeException('Please configure accessKey and secretKey');
@@ -99,14 +99,14 @@ class Qiniu extends BaseUpload
      * @return array|bool|mixed
      * @throws \Exception
      */
-    public function move(string $file = 'file')
+    public function move (string $file = 'file')
     {
         /** @var UploadValidate $uploadValidate */
         $uploadValidate = app()->make(UploadValidate::class);
-        $fileHandle     = $uploadValidate->validate($file, $this->validate);
-        if (!$fileHandle)
-            return false;
-        $key   = $this->saveFileName($fileHandle->getRealPath(), $fileHandle->getOriginalExtension());
+        [$fileHandle, $error] = $uploadValidate->validate($file, $this->validate);
+        if ($error)
+            return $this->setError($error);
+        $key = $this->saveFileName($fileHandle->getRealPath(), $fileHandle->getOriginalExtension());
         $token = $this->app()->uploadToken($this->storageName);
         try {
             $uploadMgr = new UploadManager();
@@ -114,10 +114,11 @@ class Qiniu extends BaseUpload
             if ($error !== null) {
                 return $this->setError($error->message());
             }
-            $this->fileInfo->uploadInfo   = $result;
-            $this->fileInfo->filePath     = $this->uploadUrl . '/' . $key;
-            $this->fileInfo->fileName     = $key;
+            $this->fileInfo->uploadInfo = $result;
+            $this->fileInfo->filePath = $this->uploadUrl . '/' . $key;
+            $this->fileInfo->fileName = $key;
             $this->fileInfo->originalName = $fileHandle->getOriginalName();
+            $this->fileInfo->size = $fileHandle->getSize();
             return $this->fileInfo;
         } catch (\RuntimeException $e) {
             return $this->setError($e->getMessage());
@@ -127,11 +128,11 @@ class Qiniu extends BaseUpload
     /**
      * 文件流上传 TODO 未获取原始文件名
      *
-     * @param string      $fileContent
+     * @param string $fileContent
      * @param string|null $key
      * @return array|bool|mixed|\StdClass
      */
-    public function stream(string $fileContent, string $key = null)
+    public function stream (string $fileContent, string $key = null)
     {
         $token = $this->app()->uploadToken($this->storageName);
         if (!$key) {
@@ -144,8 +145,8 @@ class Qiniu extends BaseUpload
                 return $this->setError($error->message());
             }
             $this->fileInfo->uploadInfo = $result;
-            $this->fileInfo->filePath   = $this->uploadUrl . '/' . $key;
-            $this->fileInfo->fileName   = $key;
+            $this->fileInfo->filePath = $this->uploadUrl . '/' . $key;
+            $this->fileInfo->fileName = $key;
             return $this->fileInfo;
         } catch (\RuntimeException $e) {
             return $this->setError($e->getMessage());
@@ -159,7 +160,7 @@ class Qiniu extends BaseUpload
      * @param string $filePath
      * @return mixed
      */
-    public function delete(string $filePath)
+    public function delete (string $filePath)
     {
         $bucketManager = new BucketManager($this->app(), new Config());
         return $bucketManager->delete($this->storageName, $filePath);
@@ -170,12 +171,12 @@ class Qiniu extends BaseUpload
      *
      * @return array|mixed
      */
-    public function getTempKeys()
+    public function getTempKeys ()
     {
-        $token  = $this->app()->uploadToken($this->storageName);
+        $token = $this->app()->uploadToken($this->storageName);
         $domain = $this->uploadUrl;
-        $key    = $this->saveFileName();
-        $type   = 'QINIU';
+        $key = $this->saveFileName();
+        $type = 'QINIU';
         return compact('token', 'domain', 'key', 'type');
     }
 }
