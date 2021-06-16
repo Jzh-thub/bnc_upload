@@ -48,10 +48,10 @@ class Local extends BaseUpload
         $this->url                        = rtrim(Config::get('bncUpload.stores.local.url', ''), '/');
         $this->sliceFileInfo              = new FileInfo();
         $this->sliceFileInfo->identifier  = app()->request->param('fileHash', '');                                //文件唯一标识
-        $this->sliceFileInfo->chunkNumber = app()->request->param('chunk', 0, '');                                //当前文件分片编号 索引
-        $this->sliceFileInfo->totalChunks = app()->request->param('chunks', 1, '');                               //总分片数
-        $this->sliceFileInfo->totalSize   = app()->request->param('size', 0, '');                                 //总大小
-        $this->sliceFileInfo->filename    = app()->request->param('filename', '', '');                            //文件明
+        $this->sliceFileInfo->chunkNumber = app()->request->param('chunk', 0, '');                           //当前文件分片编号 索引
+        $this->sliceFileInfo->totalChunks = app()->request->param('chunks', 1, '');                           //总分片数
+        $this->sliceFileInfo->totalSize   = app()->request->param('size', 0, '');                             //总大小
+        $this->sliceFileInfo->filename    = app()->request->param('filename', '', '');                         //文件明
         $this->sliceFileInfo->ext         = substr(strrchr($this->sliceFileInfo->filename, '.'), 1);              //文件后缀
         $this->disksInfo                  = Config::get('bncUpload.stores.local.disks', []);
     }
@@ -127,15 +127,15 @@ class Local extends BaseUpload
             //打开php暂存文件
             if (!empty($_FILES[$file])) {
                 if (!$in = fopen($_FILES[$file]['tmp_name'], "rb")) {
-                    throw new \RuntimeException('打开临时文件失败');
+                    $this->setError("打开临时文件失败");
                 }
             } else {
                 if (!$in = fopen("php://input", "rb"))
-                    throw new \RuntimeException('打开文件流失败');
+                    $this->setError("打开文件流失败");
             }
             //打开要写入的文件
             if (!$out = fopen($uploadPath, "wb"))
-                throw new \RuntimeException('上传的路径没有写入权限');
+                $this->setError("上传的路径没有写入权限");
 
             //执行写入
             while ($buff = fread($in, 4096)) {
@@ -235,7 +235,7 @@ class Local extends BaseUpload
             }
         }
         if ($done === false) {
-            throw new \RuntimeException("分片缺失,无法合并;总分片数:" . $totalChunks . ',找到分片数:' . $index, 1007);
+            return $this->setError("分片缺失,无法合并;总分片数:" . $totalChunks . ',找到分片数:' . $index);
         }
         //如果所有文件分片都上传完毕,开始合并
         $file_url = $this->path ? $this->path . DIRECTORY_SEPARATOR . date('Ymd') : date('Ymd');
@@ -246,7 +246,7 @@ class Local extends BaseUpload
         $uploadPath = $saveDir . DIRECTORY_SEPARATOR . $this->sliceFileInfo->identifier . $random . '.' . $this->sliceFileInfo->ext;
         $url        = $this->url . $file_url . DIRECTORY_SEPARATOR . $this->sliceFileInfo->identifier . $random . '.' . $this->sliceFileInfo->ext;
         if (!$out = fopen($uploadPath, "wb"))
-            throw new \RuntimeException("upload path is not writable", 1006);
+            return $this->setError("upload path is not writable");
         if (flock($out, LOCK_EX)) {
             //进行排他型锁定
             for ($index = $sliceFirst; $index < $loopCount; $index++) {

@@ -73,7 +73,7 @@ class Oss extends BaseUpload
     protected function app (): OssClient
     {
         if (!$this->accessKey || !$this->secretKey) {
-            throw new \RuntimeException('Please configure accessKey and secretKey');
+            $this->setError('Please configure accessKey and secretKey');
         }
         $this->handle = new OssClient($this->accessKey, $this->secretKey, $this->storageRegion);
         if (!$this->handle->doesBucketExist($this->storageName)) {

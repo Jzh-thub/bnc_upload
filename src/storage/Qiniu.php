@@ -86,7 +86,7 @@ class Qiniu extends BaseUpload
     protected function app ()
     {
         if (!$this->accessKey || !$this->secretKey) {
-            throw new \RuntimeException('Please configure accessKey and secretKey');
+            $this->setError('Please configure accessKey and secretKey');
         }
         $this->handle = new Auth($this->accessKey, $this->secretKey);
         return $this->handle;

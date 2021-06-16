@@ -84,7 +84,7 @@ class Cos extends BaseUpload
     protected function app()
     {
         if (!$this->accessKey || !$this->secretKey) {
-            throw new \RuntimeException('Please configure accessKey and secretKey');
+           $this->setError('Please configure accessKey and secretKey');
         }
         $this->handle = new Client(['region' => $this->storageRegion, 'credentials' => [
             'secretId' => $this->accessKey, 'secretKey' => $this->secretKey
