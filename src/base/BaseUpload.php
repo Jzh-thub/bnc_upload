@@ -34,7 +34,7 @@ abstract class BaseUpload extends BaseStorage
      * @param string $path
      * @return $this
      */
-    public function to(string $path): BaseUpload
+    public function to(string $path = ''): BaseUpload
     {
         $this->path = $path;
         return $this;
